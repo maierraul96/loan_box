@@ -1,6 +1,7 @@
 from typing import Dict, Any
 import os
 from app.steps.base import BaseStep, StepResult
+from app.config import settings
 
 # OpenAI import with error handling
 try:
@@ -43,13 +44,14 @@ class SentimentCheck(BaseStep):
 
         Returns:
             StepResult with:
-            - passed: Always True (risk score used by terminal rules instead)
+            - passed: True if risk_score < risk_threshold, False otherwise
             - computed_values: Contains risk_score (0-100), detected_risks, confidence
             - message: Description of analysis result
         """
         # Get parameters
         additional_terms = params.get("risky_terms", self.get_default_params()["risky_terms"])
         api_model = params.get("api_model", self.get_default_params()["api_model"])
+        risk_threshold = params.get("risk_threshold", self.get_default_params()["risk_threshold"])
 
         # Extract loan purpose
         loan_purpose = application.get("loan_purpose", "")
@@ -79,15 +81,21 @@ class SentimentCheck(BaseStep):
         if detected_risks:
             message += f" - Detected: {', '.join(detected_risks)}"
 
-        # Always pass - let terminal rules evaluate the risk_score
+        # Pass if risk score is below threshold
+        passed = risk_score < risk_threshold
+
+        if not passed:
+            message += f" - FAILED: Risk score {risk_score} >= threshold {risk_threshold}"
+
         return StepResult(
-            passed=True,
+            passed=passed,
             computed_values={
                 "risk_score": risk_score,
                 "detected_risks": detected_risks,
                 "confidence": confidence,
                 "loan_purpose": loan_purpose,
-                "analysis_method": analysis_method
+                "analysis_method": analysis_method,
+                "risk_threshold": risk_threshold
             },
             message=message
         )
@@ -108,8 +116,8 @@ class SentimentCheck(BaseStep):
         if not loan_purpose or not loan_purpose.strip():
             return 0, [], 1.0, "empty_purpose"
 
-        # Try OpenAI API first
-        api_key = os.environ.get("OPENAI_API_KEY")
+        # Try OpenAI API first - use settings from config
+        api_key = settings.openai_api_key
 
         if OPENAI_AVAILABLE and api_key:
             try:
@@ -130,7 +138,7 @@ class SentimentCheck(BaseStep):
         """
         Use OpenAI API to analyze sentiment with AI understanding.
         """
-        client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+        client = OpenAI(api_key=settings.openai_api_key)
 
         # Construct prompt for sentiment analysis
         risky_terms_str = ", ".join(risky_terms)
@@ -221,8 +229,10 @@ Respond in this exact JSON format:
         Returns:
             risky_terms: Additional terms to add to default list (default: empty)
             api_model: OpenAI model to use (default: gpt-5-mini)
+            risk_threshold: Maximum risk score to pass (default: 45)
         """
         return {
             "risky_terms": [],
-            "api_model": "gpt-5-mini"
+            "api_model": "gpt-5-mini",
+            "risk_threshold": 45
         }
