@@ -100,6 +100,14 @@ def create_test_applications():
             "declared_debts": 900,
             "country": "FR",
             "loan_purpose": "education"
+        },
+        {
+            "applicant_name": "Eva",
+            "amount": 15000,
+            "monthly_income": 5000,
+            "declared_debts": 200,
+            "country": "ES",
+            "loan_purpose": "gambling"
         }
     ]
 
