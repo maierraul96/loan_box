@@ -139,41 +139,67 @@ function RunHistoryPage() {
                                 <CardTitle className="text-base">Terminal Rules Evaluation</CardTitle>
                               </CardHeader>
                               <CardContent className="space-y-3">
-                                {run.terminal_rule_logs && run.terminal_rule_logs.map((log, index) => (
-                                  <div key={index} className="border-l-4 pl-4 py-2" style={{
-                                    borderLeftColor: log.matched ? '#3b82f6' : '#d1d5db'
-                                  }}>
-                                    <div className="flex items-center gap-2 mb-1">
-                                      <span className={log.matched ? 'text-blue-600' : 'text-gray-400'}>
-                                        {log.matched ? '→' : '○'}
-                                      </span>
-                                      <span className="font-medium">Rule {log.order}</span>
-                                      {log.matched && (
-                                        <Badge variant="default" className="ml-2">MATCHED</Badge>
-                                      )}
-                                      {log.evaluated && !log.matched && (
-                                        <Badge variant="outline" className="ml-2">Evaluated</Badge>
-                                      )}
-                                      {!log.evaluated && (
-                                        <Badge variant="secondary" className="ml-2">Not Evaluated</Badge>
-                                      )}
+                                {run.terminal_rule_logs && run.terminal_rule_logs.map((log, index) => {
+                                  // Determine background color and border based on match and outcome
+                                  let borderColor = '#d1d5db'; // default gray
+                                  let bgColor = '';
+
+                                  if (log.matched) {
+                                    // Matched rule gets a light background based on outcome
+                                    if (log.outcome === 'APPROVED') {
+                                      borderColor = '#86efac'; // green-300
+                                      bgColor = 'bg-green-50';
+                                    } else if (log.outcome === 'REJECTED') {
+                                      borderColor = '#fca5a5'; // red-300
+                                      bgColor = 'bg-red-50';
+                                    } else if (log.outcome === 'NEEDS_REVIEW') {
+                                      borderColor = '#fde047'; // yellow-300
+                                      bgColor = 'bg-yellow-50';
+                                    }
+                                  } else if (!log.evaluated) {
+                                    // Not evaluated rules are more grayed out
+                                    borderColor = '#e5e7eb'; // gray-200
+                                    bgColor = 'bg-gray-50';
+                                  }
+
+                                  return (
+                                    <div
+                                      key={index}
+                                      className={`border-l-4 pl-4 py-2 rounded-r ${bgColor} ${!log.evaluated ? 'opacity-80' : ''}`}
+                                      style={{ borderLeftColor: borderColor }}
+                                    >
+                                      <div className="flex items-center gap-2 mb-1">
+                                        <span className={log.matched ? 'text-blue-600' : !log.evaluated ? 'text-gray-300' : 'text-gray-400'}>
+                                          {log.matched ? '→' : '○'}
+                                        </span>
+                                        <span className={`font-medium ${!log.evaluated ? 'text-gray-400' : ''}`}>Rule {log.order}</span>
+                                        {log.matched && (
+                                          <Badge variant="default" className="ml-2">MATCHED</Badge>
+                                        )}
+                                        {log.evaluated && !log.matched && (
+                                          <Badge variant="outline" className="ml-2">Evaluated</Badge>
+                                        )}
+                                        {!log.evaluated && (
+                                          <Badge variant="secondary" className="ml-2 opacity-90">Not Evaluated</Badge>
+                                        )}
+                                      </div>
+                                      <div className={`text-xs space-y-1 mt-2 ${!log.evaluated ? 'text-gray-700' : ''}`}>
+                                        <div>
+                                          <span className="font-medium">Condition:</span>{' '}
+                                          <code className="bg-muted px-1 py-0.5 rounded">{log.condition}</code>
+                                        </div>
+                                        <div>
+                                          <span className="font-medium">Outcome:</span>{' '}
+                                          {getStatusBadge(log.outcome)}
+                                        </div>
+                                        <div>
+                                          <span className="font-medium">Reason:</span>{' '}
+                                          <span className="text-muted-foreground">{log.reason}</span>
+                                        </div>
+                                      </div>
                                     </div>
-                                    <div className="text-xs space-y-1 mt-2">
-                                      <div>
-                                        <span className="font-medium">Condition:</span>{' '}
-                                        <code className="bg-muted px-1 py-0.5 rounded">{log.condition}</code>
-                                      </div>
-                                      <div>
-                                        <span className="font-medium">Outcome:</span>{' '}
-                                        {getStatusBadge(log.outcome)}
-                                      </div>
-                                      <div>
-                                        <span className="font-medium">Reason:</span>{' '}
-                                        <span className="text-muted-foreground">{log.reason}</span>
-                                      </div>
-                                    </div>
-                                  </div>
-                                ))}
+                                  );
+                                })}
                               </CardContent>
                             </Card>
                           </div>

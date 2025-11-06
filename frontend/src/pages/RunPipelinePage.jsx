@@ -187,45 +187,69 @@ function RunPipelinePage() {
               {/* Terminal Rule Logs */}
               <div className="space-y-3 mt-6">
                 <h3 className="font-semibold">Terminal Rules Evaluation:</h3>
-                {runResult.terminal_rule_logs && runResult.terminal_rule_logs.map((log, index) => (
-                  <Card key={index} className="border-2">
-                    <CardContent className="pt-4">
-                      <div className="flex items-start gap-3">
-                        <span className={`text-2xl ${log.matched ? 'text-blue-600' : 'text-gray-400'}`}>
-                          {log.matched ? '→' : '○'}
-                        </span>
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-2">
-                            <h4 className="font-medium">Rule {log.order}</h4>
-                            {log.matched && (
-                              <Badge variant="default">MATCHED</Badge>
-                            )}
-                            {log.evaluated && !log.matched && (
-                              <Badge variant="outline">Evaluated</Badge>
-                            )}
-                            {!log.evaluated && (
-                              <Badge variant="secondary">Not Evaluated</Badge>
-                            )}
-                          </div>
-                          <div className="text-sm space-y-2">
-                            <div>
-                              <span className="font-medium">Condition:</span>{' '}
-                              <code className="bg-muted px-1 py-0.5 rounded text-xs">{log.condition}</code>
+                {runResult.terminal_rule_logs && runResult.terminal_rule_logs.map((log, index) => {
+                  // Determine background color based on match and outcome
+                  let cardClassName = "border-2";
+                  let bgColor = "";
+
+                  if (log.matched) {
+                    // Matched rule gets a light background based on outcome
+                    if (log.outcome === 'APPROVED') {
+                      bgColor = "bg-green-50";
+                      cardClassName = "border-2 border-green-300";
+                    } else if (log.outcome === 'REJECTED') {
+                      bgColor = "bg-red-50";
+                      cardClassName = "border-2 border-red-300";
+                    } else if (log.outcome === 'NEEDS_REVIEW') {
+                      bgColor = "bg-yellow-50";
+                      cardClassName = "border-2 border-yellow-300";
+                    }
+                  } else if (!log.evaluated) {
+                    // Not evaluated rules are more grayed out
+                    bgColor = "bg-gray-50 opacity-80";
+                    cardClassName = "border-2 border-gray-200";
+                  }
+
+                  return (
+                    <Card key={index} className={`${cardClassName} ${bgColor}`}>
+                      <CardContent className="pt-4">
+                        <div className="flex items-start gap-3">
+                          <span className={`text-2xl ${log.matched ? 'text-blue-600' : !log.evaluated ? 'text-gray-300' : 'text-gray-400'}`}>
+                            {log.matched ? '→' : '○'}
+                          </span>
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-2">
+                              <h4 className={`font-medium ${!log.evaluated ? 'text-gray-400' : ''}`}>Rule {log.order}</h4>
+                              {log.matched && (
+                                <Badge variant="default">MATCHED</Badge>
+                              )}
+                              {log.evaluated && !log.matched && (
+                                <Badge variant="outline">Evaluated</Badge>
+                              )}
+                              {!log.evaluated && (
+                                <Badge variant="secondary" className="opacity-80">Not Evaluated</Badge>
+                              )}
                             </div>
-                            <div>
-                              <span className="font-medium">Outcome:</span>{' '}
-                              {getStatusBadge(log.outcome)}
-                            </div>
-                            <div>
-                              <span className="font-medium">Reason:</span>{' '}
-                              <span className="text-muted-foreground">{log.reason}</span>
+                            <div className={`text-sm space-y-2 ${!log.evaluated ? 'text-gray-400' : ''}`}>
+                              <div>
+                                <span className="font-medium">Condition:</span>{' '}
+                                <code className="bg-muted px-1 py-0.5 rounded text-xs">{log.condition}</code>
+                              </div>
+                              <div>
+                                <span className="font-medium">Outcome:</span>{' '}
+                                {getStatusBadge(log.outcome)}
+                              </div>
+                              <div>
+                                <span className="font-medium">Reason:</span>{' '}
+                                <span className="text-muted-foreground">{log.reason}</span>
+                              </div>
                             </div>
                           </div>
                         </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
+                      </CardContent>
+                    </Card>
+                  );
+                })}
               </div>
             </CardContent>
           </Card>
