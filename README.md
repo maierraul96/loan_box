@@ -49,6 +49,8 @@ loan_box/
 │   │   └── test_steps.py
 │   ├── seed_default_pipeline.py
 │   ├── requirements.txt
+│   ├── .env                   # Environment variables (create from .env.example)
+│   ├── .env.example           # Environment variables template
 │   └── loan_orchestrator.db   # SQLite database
 │
 └── frontend/                  # React (JavaScript) frontend
@@ -105,10 +107,23 @@ uv venv
 uv pip install -r requirements.txt
 ```
 
-3. Set up OpenAI API key (required for Sentiment Check step):
+3. Configure environment variables:
 ```bash
-export OPENAI_API_KEY="your-api-key-here"
+# Copy the example .env file
+cp .env.example .env
+
+# Edit .env and add your OpenAI API key
+# Replace 'your-openai-api-key-here' with your actual API key
 ```
+
+The `.env` file should contain:
+```env
+DATABASE_URL=sqlite:///./loan_box.db
+CORS_ORIGINS=["http://localhost:3000","http://localhost:5173"]
+OPENAI_API_KEY=your-openai-api-key-here
+```
+
+**Note**: The `OPENAI_API_KEY` is required for the Sentiment Check step to work. Get your API key from [OpenAI Platform](https://platform.openai.com/api-keys).
 
 4. Seed the database with default pipeline:
 ```bash
