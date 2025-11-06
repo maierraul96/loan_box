@@ -14,12 +14,7 @@ class RiskScoring(BaseStep):
         approve_threshold = params.get("approve_threshold", 45)
 
         # Get country caps for max_allowed calculation
-        country_caps = params.get("country_caps", {
-            "ES": 30000,
-            "FR": 25000,
-            "DE": 35000,
-            "OTHER": 20000
-        })
+        country_caps = params.get("country_caps", self.get_default_params()["country_caps"])
 
         monthly_income = application["monthly_income"]
         declared_debts = application["declared_debts"]

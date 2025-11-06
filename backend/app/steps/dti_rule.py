@@ -11,7 +11,7 @@ class DTIRule(BaseStep):
     step_type = "dti_rule"
 
     def execute(self, application: Dict[str, Any], params: Dict[str, Any]) -> StepResult:
-        max_dti = params.get("max_dti", 0.40)
+        max_dti = params.get("max_dti", self.get_default_params()["max_dti"])
 
         monthly_income = application["monthly_income"]
         declared_debts = application["declared_debts"]

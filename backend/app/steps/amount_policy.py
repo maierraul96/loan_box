@@ -12,12 +12,7 @@ class AmountPolicy(BaseStep):
 
     def execute(self, application: Dict[str, Any], params: Dict[str, Any]) -> StepResult:
         # Default country caps
-        default_caps = {
-            "ES": 30000,
-            "FR": 25000,
-            "DE": 35000,
-            "OTHER": 20000
-        }
+        default_caps = self.get_default_params()
 
         # Merge default caps with provided params
         country_caps = {**default_caps, **params}

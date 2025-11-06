@@ -122,7 +122,7 @@ class PipelineExecutor:
             Tuple of (Final status, Terminal rule logs)
         """
         # Sort rules by order
-        sorted_rules = sorted(terminal_rules, key=lambda x: x.get("order", 999))
+        sorted_rules = sorted(terminal_rules, key=lambda x: x["order"])
 
         terminal_rule_logs = []
         final_status = FinalStatus.NEEDS_REVIEW
@@ -132,7 +132,7 @@ class PipelineExecutor:
         for rule in sorted_rules:
             condition = rule["condition"]
             outcome = rule["outcome"]
-            order = rule.get("order", 999)
+            order = rule["order"]
 
             # If a rule already matched, skip evaluation but log it
             if matched_rule_found:
