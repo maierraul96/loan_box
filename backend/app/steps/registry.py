@@ -3,6 +3,7 @@ from app.steps.base import BaseStep
 from app.steps.dti_rule import DTIRule
 from app.steps.amount_policy import AmountPolicy
 from app.steps.risk_scoring import RiskScoring
+from app.steps.sentiment_check import SentimentCheck
 
 
 # Registry mapping step_type to step class
@@ -10,6 +11,7 @@ STEP_REGISTRY: Dict[str, Type[BaseStep]] = {
     "dti_rule": DTIRule,
     "amount_policy": AmountPolicy,
     "risk_scoring": RiskScoring,
+    "sentiment_check": SentimentCheck
 }
 
 

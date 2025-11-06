@@ -12,3 +12,4 @@ class StepType(str, Enum):
     DTI_RULE = "dti_rule"
     AMOUNT_POLICY = "amount_policy"
     RISK_SCORING = "risk_scoring"
+    SENTIMENT_CHECK = "sentiment_check"
