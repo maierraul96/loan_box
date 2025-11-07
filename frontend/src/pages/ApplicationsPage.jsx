@@ -10,6 +10,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
+import ApplicationForm from '@/components/ApplicationForm';
 
 function ApplicationsPage() {
   const { data: applicationsList, isLoading, error } = useQuery({
@@ -40,6 +41,8 @@ function ApplicationsPage() {
     <div>
       <h1 className="text-3xl font-bold mb-6">Applications</h1>
 
+      <ApplicationForm />
+
       <Card>
         <CardHeader>
           <CardTitle>All Loan Applications</CardTitle>
@@ -47,7 +50,7 @@ function ApplicationsPage() {
         <CardContent>
           {applicationsList && applicationsList.length === 0 ? (
             <p className="text-muted-foreground text-center py-8">
-              No applications found. Applications are created via API.
+              No applications found. Click "New Application" above to create one.
             </p>
           ) : (
             <Table>
@@ -81,7 +84,7 @@ function ApplicationsPage() {
       </Card>
 
       <div className="mt-4 text-sm text-muted-foreground">
-        <p>Note: Applications are created via the API. Use the Run page to execute pipelines on these applications.</p>
+        <p>Tip: After creating an application, use the Run page to execute pipelines and determine loan approval status.</p>
       </div>
     </div>
   );

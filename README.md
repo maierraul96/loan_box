@@ -5,10 +5,10 @@ A minimal loan application processing system where applications are processed th
 ## Overview
 
 This project implements a loan orchestration system that:
-- Creates loan applications via API (no application form UI required)
+- Creates loan applications via UI form or API
 - Processes applications through configurable pipelines with business rule steps
 - Evaluates terminal rules to determine final loan status
-- Provides a UI for pipeline configuration and execution
+- Provides a UI for application management, pipeline configuration, and execution
 
 ### Loan Application Structure
 
@@ -56,6 +56,7 @@ loan_box/
 └── frontend/                  # React (JavaScript) frontend
     ├── src/
     │   ├── components/
+    │   │   ├── ApplicationForm.jsx  # Form to create loan applications
     │   │   ├── applications/  # Application-related components
     │   │   ├── layout/        # Layout components
     │   │   │   └── Layout.jsx
@@ -228,9 +229,25 @@ Configurable, ordered rules that map step outcomes to final status. The default 
 
 Terminal rules are evaluated in order, and the first matching rule determines the final status.
 
-## API Examples
+## Usage
 
-### Create an Application
+### Creating Loan Applications
+
+#### Via UI (Recommended)
+
+1. Navigate to the **Applications** page at `http://localhost:5173/applications`
+2. Click the **"+ New Application"** button
+3. Fill in all required fields:
+   - Applicant Name
+   - Loan Amount (must be positive)
+   - Monthly Income (must be positive)
+   - Declared Debts (can be 0 or more)
+   - Country Code (2-10 characters, e.g., ES, FR, OTHER)
+   - Loan Purpose
+4. Click **"Create Application"**
+5. The new application will appear in the table below
+
+#### Via API
 
 ```bash
 curl -X POST "http://localhost:8000/api/applications" \
@@ -244,6 +261,8 @@ curl -X POST "http://localhost:8000/api/applications" \
     "loan_purpose": "home renovation"
   }'
 ```
+
+### API Examples
 
 ### List Pipelines
 
@@ -321,6 +340,7 @@ SQLite database with pipeline-embedded approach:
 
 ### Frontend Features
 
+- **Application Manager**: Create new loan applications via form with validation, view all applications with status
 - **Pipeline Builder**: Add/remove/reorder steps, edit parameters, configure terminal rules
 - **Run Panel**: Select application and pipeline, execute, view detailed logs and final status
 - **Step Catalog**: Browse available business rules with descriptions and default parameters
